@@ -78,7 +78,7 @@ public class Index {
         	return;
         };
 
-        String path = "objects/" + map.get(filename);
+        String path = ".\\objects\\" + map.get(filename);
         System.out.println(path);
         File file = new File(path);
 
