@@ -23,11 +23,23 @@ public class Commit {
 	TreeObject pTree;
 	String summary, author, date;
 	
-	public Commit(String _summary, String _author, Commit _parent) throws NoSuchAlgorithmException, IOException {
+	public Commit(String _summary, String _author, Commit _parent) throws Exception {
 		summary = _summary;
 		author = _author;
 		parent = _parent;
+		if (parent!=null) {
+			parent.setChild(this);
+			parent.writeFile();
+		}
+		
 		makeTree();
+		writeFile();
+		File file = new File("HEAD");
+		MrTopicsMan.writeTo(file, this.createMySHA());
+	}
+	
+	public void setChild(Commit input) {
+		child = input;
 	}
 	
 	public void makeTree() throws NoSuchAlgorithmException, IOException {
@@ -38,12 +50,22 @@ public class Commit {
 		Scanner scanner = new Scanner(f);
 		while(scanner.hasNext()) {
 			str = scanner.nextLine();
-			temp+="blob"+str.substring(str.indexOf(" : "));
-			temp+=" "+str.substring(0,str.indexOf(" "));
+			if(str.substring(0,4)=="blob")
+				temp+="blob";
+			else
+				temp+="tree";	
+			
+			temp+=str.substring(str.indexOf(" : "));
+			temp+=" "+str.substring(0,str.indexOf(" : "));
 			strList.add(temp);
+			
+			temp = "";
+			str = "";
 		}
 		pTree = new TreeObject(strList);
 		MrTopicsMan.writeTo(f, "");
+		
+		//System.out.println("TEMP: " + temp);
 	}
 	
     public String generateSHAfromString(String input) {
@@ -84,15 +106,15 @@ public class Commit {
     }
     
     public String createMySHA() {
-    	return generateSHAfromString(pTree + summary);
+    	return generateSHAfromString(pTree.getTreeName() + summary);
     }
     
     public void writeFile() throws Exception {
     	String sha = ".\\objects\\" + createMySHA();
     	PrintWriter writer = new PrintWriter(sha);
 		writer.println(pTree.getTreeName());
-		writer.println(parent == null ? "null" : parent.pTree);
-		writer.println(child == null ? "null" : child.pTree);
+		writer.println(parent == null ? "null" : parent.createMySHA());
+		writer.println(child == null ? "null" : child.createMySHA());
 		writer.println(author);
 		writer.println(getDate());
 		writer.println(summary);

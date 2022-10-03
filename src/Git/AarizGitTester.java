@@ -118,32 +118,32 @@ class AarizGitTester {
 				
 	}
 	*/
-	@Test
-	void treeObjTest() throws IOException, NoSuchAlgorithmException {
-		//create arraylist, add elements (blobs and trees)
-		ArrayList<String> list = new ArrayList<String>();
-		list.add("blob : 81e0268c84067377a0a1fdfb5cc996c93f6dcf9f");
-		list.add("blob : 01d82591292494afd1602d175e165f94992f6f5f");
-		list.add("blob : f1d82236ab908c86ed095023b1d2e6ddf78a6d83");
-		list.add("tree : bd1ccec139dead5ee0d8c3a0499b42a7d43ac44b");
-		list.add("tree : e7d79898d3342fd15daf6ec36f4cb095b52fd976");
-		
-		TreeObject theTree = new TreeObject(list);
-		File file = new File(".\\objects\\d30ba5f7fcb23557ff87fc4e0f32bf5370f154cd");
-		assertTrue(file.exists());
-		
-		//Check if all lines exist and are correct 
-		Scanner scanner = new Scanner(file);
-		assertEquals(scanner.nextLine(), "blob : 81e0268c84067377a0a1fdfb5cc996c93f6dcf9f");
-		assertEquals(scanner.nextLine(), "blob : 01d82591292494afd1602d175e165f94992f6f5f");
-		assertEquals(scanner.nextLine(), "blob : f1d82236ab908c86ed095023b1d2e6ddf78a6d83");
-		assertEquals(scanner.nextLine(), "tree : bd1ccec139dead5ee0d8c3a0499b42a7d43ac44b");
-		assertEquals(scanner.nextLine(), "tree : e7d79898d3342fd15daf6ec36f4cb095b52fd976");
-//		file.delete();
-	}
+//	@Test
+//	void treeObjTest() throws IOException, NoSuchAlgorithmException {
+//		//create arraylist, add elements (blobs and trees)
+//		ArrayList<String> list = new ArrayList<String>();
+//		list.add("blob : 81e0268c84067377a0a1fdfb5cc996c93f6dcf9f");
+//		list.add("blob : 01d82591292494afd1602d175e165f94992f6f5f");
+//		list.add("blob : f1d82236ab908c86ed095023b1d2e6ddf78a6d83");
+//		list.add("tree : bd1ccec139dead5ee0d8c3a0499b42a7d43ac44b");
+//		list.add("tree : e7d79898d3342fd15daf6ec36f4cb095b52fd976");
+//		
+//		TreeObject theTree = new TreeObject(list);
+//		File file = new File(".\\objects\\d30ba5f7fcb23557ff87fc4e0f32bf5370f154cd");
+//		assertTrue(file.exists());
+//		
+//		//Check if all lines exist and are correct 
+//		Scanner scanner = new Scanner(file);
+//		assertEquals(scanner.nextLine(), "blob : 81e0268c84067377a0a1fdfb5cc996c93f6dcf9f");
+//		assertEquals(scanner.nextLine(), "blob : 01d82591292494afd1602d175e165f94992f6f5f");
+//		assertEquals(scanner.nextLine(), "blob : f1d82236ab908c86ed095023b1d2e6ddf78a6d83");
+//		assertEquals(scanner.nextLine(), "tree : bd1ccec139dead5ee0d8c3a0499b42a7d43ac44b");
+//		assertEquals(scanner.nextLine(), "tree : e7d79898d3342fd15daf6ec36f4cb095b52fd976");
+////		file.delete();
+//	}
 
 	@Test
-	void CommitTest() throws IOException, NoSuchAlgorithmException {
+	void CommitTest() throws Exception {
 		//create arraylist, add elements (blobs and trees)
 		Index index = new Index();
 		index.init();
@@ -151,10 +151,12 @@ class AarizGitTester {
 		assertTrue(testIndex.exists());
 		
 		
-		index.add("testFile2.txt");
 		index.add("testFile.txt");
-		index.add("testFile1.txt");
 		Commit c1 = new Commit("summary","author",null);
+		index.add("testFile2.txt");
+		Commit c2 = new Commit("summary 2","author 2", c1);
+		index.add("testFile1.txt");
+		Commit c3 = new Commit("summary 3","author 3", c2);
 		//Check if all lines exist and are correct 
 //		Scanner scanner = new Scanner(file);
 //		assertEquals(scanner.nextLine(), "blob : 81e0268c84067377a0a1fdfb5cc996c93f6dcf9f");
