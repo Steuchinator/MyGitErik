@@ -1,6 +1,7 @@
 package Git;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -11,7 +12,7 @@ import java.security.NoSuchAlgorithmException;
 
 public class MrTopicsMan {
 	private static FileWriter ike;
-	private BufferedReader mike;
+	private static BufferedReader mike;
 	public MrTopicsMan() {
 		
 	}
@@ -22,7 +23,7 @@ public class MrTopicsMan {
 		ike.close();
 	}
 	
-	public String readContents(File f) throws IOException {
+	public static String readContents(File f) throws IOException {
 		String temp = "";
 		mike = new BufferedReader(new FileReader(f));
 		while (mike.ready())
@@ -69,5 +70,23 @@ public class MrTopicsMan {
 	    catch (NoSuchAlgorithmException e) {
 	        throw new RuntimeException(e);
 	    }
+	}
+
+	public static String readContent(String s) throws IOException {
+		// TODO Auto-generated method stub
+		File f = new File(s);
+		String temp = "";
+		mike = new BufferedReader(new FileReader(f));
+		while (mike.ready())
+			temp += (char)mike.read();
+		mike.close();
+		return temp;
+	}
+
+	public static void writeTo(String string, String s) throws IOException {
+		ike = new FileWriter(new File(string));
+		ike.write(s);
+		ike.close();
+		
 	}
 }

@@ -27,7 +27,12 @@ public class Index {
     		System.out.println(e.toString());
     	}
     }
-
+    
+    public void clear() throws IOException {
+    	map = new HashMap<String,String>();
+    	MrTopicsMan.writeTo("index", "");
+    }
+    
     public void getMapFromFile(File file) {
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
             String line;

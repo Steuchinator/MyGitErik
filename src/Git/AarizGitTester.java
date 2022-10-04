@@ -39,6 +39,9 @@ class AarizGitTester {
 		PrintWriter writer2 = new PrintWriter("testFile2.txt", "UTF-8");
 		writer2.print("test 3");
 		writer2.close();
+		PrintWriter writer3 = new PrintWriter("testFile3.txt", "UTF-8");
+		writer3.print("test 4");
+		writer3.close();
 	}
 //	File file = new File("something.txt");
 //	PrintWriter something = new PrintWriter(file);
@@ -145,18 +148,19 @@ class AarizGitTester {
 	@Test
 	void CommitTest() throws Exception {
 		//create arraylist, add elements (blobs and trees)
-		Index index = new Index();
-		index.init();
-		File testIndex = new File("index");
-		assertTrue(testIndex.exists());
+		GitOverlord god = new GitOverlord();
+		god.addBlob("testFile.txt");
+		god.makeCommit("summary","author");
 		
+		god.addBlob("testFile1.txt");
+		god.makeCommit("summary 2","author 2");
 		
-		index.add("testFile.txt");
-		Commit c1 = new Commit("summary","author",null);
-		index.add("testFile2.txt");
-		Commit c2 = new Commit("summary 2","author 2", c1);
-		index.add("testFile1.txt");
-		Commit c3 = new Commit("summary 3","author 3", c2);
+		god.addBlob("testFile2.txt");
+		god.makeCommit("summary 3","author 3");
+
+		god.addBlob("testFile3.txt");
+		god.makeCommit("summary 4","author 4");
+		
 		//Check if all lines exist and are correct 
 //		Scanner scanner = new Scanner(file);
 //		assertEquals(scanner.nextLine(), "blob : 81e0268c84067377a0a1fdfb5cc996c93f6dcf9f");

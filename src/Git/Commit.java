@@ -17,30 +17,34 @@ import java.util.ArrayList;
 import java.util.Calendar;  
 
 public class Commit {
-	Commit parent;
-	Commit child;
-	
+	String parent;
+	String child;
+	String SHA1;
 	TreeObject pTree;
 	String summary, author, date;
 	
-	public Commit(String _summary, String _author, Commit _parent) throws Exception {
+	public Commit(String _summary, String _author) throws Exception {
 		summary = _summary;
 		author = _author;
-		parent = _parent;
-		if (parent!=null) {
-			parent.setChild(this);
-			parent.writeFile();
+		File file = new File("HEAD");
+		String s = MrTopicsMan.readContents(file);
+		if(s=="") {
+			parent = null;
 		}
+		else
+			parent = s;
 		
 		makeTree();
+		SHA1 = this.createMySHA();
 		writeFile();
-		File file = new File("HEAD");
-		MrTopicsMan.writeTo(file, this.createMySHA());
+		MrTopicsMan.writeTo(file, SHA1);
+		MrTopicsMan.writeTo("index", "");
 	}
 	
-	public void setChild(Commit input) {
-		child = input;
+	public String getSha() {
+		return SHA1;
 	}
+	
 	
 	public void makeTree() throws NoSuchAlgorithmException, IOException {
 		ArrayList<String> strList = new ArrayList<String>();
@@ -50,20 +54,25 @@ public class Commit {
 		Scanner scanner = new Scanner(f);
 		while(scanner.hasNext()) {
 			str = scanner.nextLine();
-			if(str.substring(0,4)=="blob")
-				temp+="blob";
-			else
-				temp+="tree";	
-			
-			temp+=str.substring(str.indexOf(" : "));
+			temp+="blob"+str.substring(str.indexOf(" : "));
 			temp+=" "+str.substring(0,str.indexOf(" : "));
 			strList.add(temp);
 			
 			temp = "";
 			str = "";
 		}
+		scanner.close();
+		if(parent!=null) {
+			Scanner scanny = new Scanner(new File(".\\objects\\"+parent));
+			temp = scanny.nextLine();
+			strList.add("previous tree : "+temp);
+			scanny.close();
+		}
+		else {
+			strList.add("No earlier tree in repo");
+		}
 		pTree = new TreeObject(strList);
-		MrTopicsMan.writeTo(f, "");
+		
 		
 		//System.out.println("TEMP: " + temp);
 	}
@@ -110,16 +119,36 @@ public class Commit {
     }
     
     public void writeFile() throws Exception {
-    	String sha = ".\\objects\\" + createMySHA();
+    	String sha = ".\\objects\\" + SHA1;
     	PrintWriter writer = new PrintWriter(sha);
 		writer.println(pTree.getTreeName());
-		writer.println(parent == null ? "null" : parent.createMySHA());
-		writer.println(child == null ? "null" : child.createMySHA());
+		if (parent == null)
+			writer.println("null");
+		if(parent!=null) {
+				writer.println(parent);
+				File f = new File(".\\objects\\"+parent);
+				Scanner scanner = new Scanner(f);
+				String temp = scanner.nextLine()+"\n";
+				temp+=scanner.nextLine()+"\n";
+				scanner.nextLine();
+				temp+=SHA1+"\n";
+				while(scanner.hasNext()) {
+					temp+=scanner.nextLine()+"\n";
+				}
+				scanner.close();
+				MrTopicsMan.writeTo(f, temp);
+				
+			}
+		
+		if(child ==null)
+			writer.println("null");
 		writer.println(author);
 		writer.println(getDate());
 		writer.println(summary);
 		
 		writer.close();
+		
+		
     }
     
     
